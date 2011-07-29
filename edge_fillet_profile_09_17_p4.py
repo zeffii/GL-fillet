@@ -36,7 +36,8 @@ from bpy_extras.view3d_utils import location_3d_to_region_2d as loc3d2d
 # [x] esc/rclick to cancel.
 # [x] sliders update in realtime
 # [ ] make shift+rightlick, draw manipulation line to mouse cursor.
-# [ ] enter to accept, and make real. 
+# [ ] enter to accept, and make real.
+# [ ] make faces [ tri, quad ]
 # [ ] user must apply all transforms, or matrix * vector
 
 
@@ -50,6 +51,9 @@ DEBUG = False
 
 gl_col1 = 1.0, 0.2, 0.2, 1.0  # vertex arc color
 gl_col2 = 0.5, 0.7, 0.4, 1.0  # radial center color
+
+BUILD_REV = int(bpy.app.build_revision)
+CHANGE_REV = 38676
 
 
 ''' helper functions '''
@@ -158,12 +162,22 @@ def get_correct_verts(arc_centre, arc_start, arc_end, NUM_VERTS, context):
     
     trig_arc_verts = []
 
-    for i in range(NUM_VERTS):
-        rotation_matrix = mathutils.Matrix.Rotation(i*-div_angle, 3, axis)
-        trig_point = rotation_matrix * (arc_start - obj_centre - arc_centre)  
-        # trig_point = (arc_start - obj_centre - arc_centre) * rotation_matrix
-        trig_point += obj_centre + arc_centre
-        trig_arc_verts.append(trig_point)        
+    # optimized, instead of checking revision for each vertex in the loop.
+    # means more code, but meh.
+    if BUILD_REV >= CHANGE_REV:
+        for i in range(NUM_VERTS):
+            rotation_matrix = mathutils.Matrix.Rotation(i*-div_angle, 3, axis)
+            
+            trig_point = rotation_matrix * (arc_start - obj_centre - arc_centre)
+            trig_point += obj_centre + arc_centre
+            trig_arc_verts.append(trig_point)        
+    else:    
+        for i in range(NUM_VERTS):
+            rotation_matrix = mathutils.Matrix.Rotation(i*-div_angle, 3, axis)
+ 
+            trig_point = (arc_start - obj_centre - arc_centre) * rotation_matrix
+            trig_point += obj_centre + arc_centre
+            trig_arc_verts.append(trig_point)        
         
     return trig_arc_verts
 
@@ -335,6 +349,9 @@ def draw_callback_px(self, context):
     
     # draw bottom left, above object name the number of vertices in the fillet
     location = 65, 30 
+
+    # antialiased text drawing
+    bgl.glDisable(bgl.GL_BLEND)
     draw_text(context, location, NUM_VERTS)
         
     # restore opengl defaults
