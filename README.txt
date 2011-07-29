@@ -24,7 +24,8 @@
 # [x] allow ctrl+numpad +/- to define segment numbers.
 # [x] esc/rclick to cancel.
 # [x] sliders update in realtime
+# [x] enter to accept, and make real.
 # [ ] make shift+rightlick, draw manipulation line to mouse cursor.
-# [ ] enter to accept, and make real.
+# [ ] cleanup
 # [ ] make faces [ tri, quad ]
 # [ ] user must apply all transforms, or matrix * vector
