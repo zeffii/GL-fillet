@@ -216,6 +216,14 @@ def generate_geometry_already(self, context):
         edge_counter += 1
         vertex_ID += 1
     
+    # TODO
+    # add two more edges
+    # connect 
+    # - found_index[0] with last_vertex
+    # - found_index[1] with last_vertex - num_verts (-1?)
+    
+    # then delete 'active' vert (should still be selected! ) YAY!
+    
     obj.data.update()
 
     print("generate_geometry_already(self, context) " )
