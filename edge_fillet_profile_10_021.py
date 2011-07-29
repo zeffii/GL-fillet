@@ -196,6 +196,7 @@ def generate_geometry_already(self, context):
     
     bpy.ops.object.mode_set(mode='OBJECT')
     obj = context.object
+    removable_vert = find_index_of_selected_vertex(obj)
     idx1, idx2 = return_connected_from_object(obj)
 
     # make vertices
@@ -235,6 +236,17 @@ def generate_geometry_already(self, context):
 
     obj.data.update()
     bpy.ops.object.mode_set(mode='EDIT')
+
+    # unselect all.
+    bpy.ops.mesh.select_all(action='TOGGLE')
+    
+    # return to object mode to perform vertex selection
+    bpy.ops.object.mode_set(mode='OBJECT')
+    bpy.context.active_object.data.vertices[removable_vert].select = True
+
+    # back into edit mode, delete the very first vertex again.
+    bpy.ops.object.mode_set(mode='EDIT')
+    bpy.ops.mesh.delete()  
     return
 
 
