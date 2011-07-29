@@ -152,6 +152,83 @@ def get_correct_verts(arc_centre, arc_start, arc_end, NUM_VERTS, context):
 
 
 
+''' generate the geometry already! '''
+
+
+def generate_geometry_already(self, context):
+    
+    
+    radius_rate = bpy.context.scene.MyMove
+    if radius_rate == 0.0 or radius_rate == 1.0:
+        # why?
+        report_string = "pick values between, and exluding, 0.0 and 1.0"
+        self.report({'INFO'}, report_string)
+
+        return
+    
+    NUM_VERTS = context.scene.NumVerts
+    mode = context.scene.FilletMode
+    points, guide_verts = init_functions(self, context)
+        
+    # get control points and knots.
+    h_control = guide_verts[0]
+    radial_centre = guide_verts[1]
+    knot1, knot2 = points[0], points[1]
+
+    # draw fillet ( 2 modes )        
+    if mode == 'KAPPA':
+        kappa_ctrl_1 = knot1.lerp(h_control, context.scene.CurveHandle1)
+        kappa_ctrl_2 = knot2.lerp(h_control, context.scene.CurveHandle2)
+        arc_verts = bezlerp(knot1, kappa_ctrl_1, kappa_ctrl_2, knot2, NUM_VERTS)
+
+    if mode == 'TRIG':
+        arc_centre = radial_centre        
+        arc_start = knot1
+        arc_end = knot2
+        arc_verts = get_correct_verts(arc_centre, arc_start, arc_end, 
+                                        NUM_VERTS, context)
+    
+    bpy.ops.object.mode_set(mode='OBJECT')
+    obj = context.object
+
+    # make vertices
+    obj.data.vertices.add(NUM_VERTS)
+    vertex_counter = NUM_VERTS
+    for vert in range(len(arc_verts)):
+        obj.data.vertices[-vertex_counter].co = arc_verts[vert]        
+        vertex_counter -= 1
+    
+    
+    # build edges, find a prettier way to do this. it's ridiculous.
+    NUM_EDGES = (NUM_VERTS - 1)
+    obj.data.edges.add(NUM_EDGES)
+
+    # must count current verts first
+    current_vert_count = len(bpy.context.object.data.vertices)
+    edge_counter = -NUM_EDGES
+    vertex_ID = current_vert_count - NUM_VERTS
+    for edge in range(NUM_VERTS-1):
+        a = vertex_ID
+        b = vertex_ID+1
+        obj.data.edges[edge_counter].vertices = [a, b]
+        print(str(edge_counter)+"[", a, ",", b, "]")
+
+        edge_counter += 1
+        vertex_ID += 1
+    
+    obj.data.update()
+
+    print("generate_geometry_already(self, context) " )
+    
+    bpy.ops.object.mode_set(mode='EDIT')
+    # return arc_verts
+    return
+
+
+
+
+
+
 
 ''' director function '''
 
@@ -273,15 +350,13 @@ def draw_text(context, location, NUM_VERTS):
    
 def draw_callback_px(self, context):
     
-    objlist = context.selected_objects
-    names_of_empties = [i.name for i in objlist]
-
     region = context.region
     rv3d = context.space_data.region_3d
     points, guide_verts = init_functions(self, context)
     
     NUM_VERTS = context.scene.NumVerts
     mode = context.scene.FilletMode
+
     # draw bevel
     draw_polyline_from_coordinates(context, points, "GL_LINE_STIPPLE")
     
@@ -484,10 +559,10 @@ class OBJECT_OT_draw_fillet(bpy.types.Operator):
         # make real
         if event.type in ('RET','NUMPAD_ENTER') and event.value == 'RELEASE':
             print("Make geometry")
+            generate_geometry_already(self, context)
             context.region.callback_remove(self._handle)            
             return {'CANCELLED'}     
-            
-        
+                        
             
         # context.area.tag_redraw()
         return {'PASS_THROUGH'}
