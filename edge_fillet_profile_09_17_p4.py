@@ -348,11 +348,7 @@ def draw_callback_px(self, context):
         draw_points(context, [radial_centre], 5.2, gl_col2)
     
     # draw bottom left, above object name the number of vertices in the fillet
-    location = 65, 30 
-
-    # antialiased text drawing
-    bgl.glDisable(bgl.GL_BLEND)
-    draw_text(context, location, NUM_VERTS)
+    draw_text(context, (65, 30), NUM_VERTS)
         
     # restore opengl defaults
     bgl.glLineWidth(1)
