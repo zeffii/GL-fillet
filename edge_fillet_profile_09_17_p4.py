@@ -420,7 +420,7 @@ class OBJECT_OT_draw_fillet(bpy.types.Operator):
     bl_options = {'REGISTER', 'UNDO'}
     
     # i understand that a lot of these ifs are redundant, scheduled for
-    # deletion.
+    # deletion. is 'RELEASE' redundant for keys?
    
     def modal(self, context, event):
         context.area.tag_redraw()
