@@ -365,7 +365,7 @@ def draw_callback_px(self, context):
 class UIPanel(bpy.types.Panel):
     bl_label = "Dynamic Edge Fillet"
     bl_space_type = "VIEW_3D"
-    bl_region_type = "UI"
+    bl_region_type = "TOOL_PROPS"
  
     scn = bpy.types.Scene
     object = bpy.context.object
