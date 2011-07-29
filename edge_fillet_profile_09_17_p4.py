@@ -352,10 +352,10 @@ class UIPanel(bpy.types.Panel):
     scn.NumVerts = bpy.props.IntProperty(min=2, max=64, default=12,
                                             name="number of verts")
     
-    scn.CurveHandle1 = bpy.props.FloatProperty( min=0.0, max=1.0, 
+    scn.CurveHandle1 = bpy.props.FloatProperty( min=0.0, max=4.0, 
                                                 default = KAPPA,
                                                 name="handle1")
-    scn.CurveHandle2 = bpy.props.FloatProperty( min=0.0, max=1.0, 
+    scn.CurveHandle2 = bpy.props.FloatProperty( min=0.0, max=4.0, 
                                                 default = KAPPA,
                                                 name="handle2")
     
@@ -481,6 +481,12 @@ class OBJECT_OT_draw_fillet(bpy.types.Operator):
             context.area.tag_redraw()
             return {'PASS_THROUGH'} 
         
+        # make real
+        if event.type in ('RET','NUMPAD_ENTER') and event.value == 'RELEASE':
+            print("Make geometry")
+            context.region.callback_remove(self._handle)            
+            return {'CANCELLED'}     
+            
         
             
         # context.area.tag_redraw()
