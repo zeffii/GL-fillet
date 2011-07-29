@@ -9,39 +9,7 @@ from mathutils import Vector
 from mathutils.geometry import interpolate_bezier as bezlerp
 from bpy_extras.view3d_utils import location_3d_to_region_2d as loc3d2d
 
-# OBJECTIVE
 
-# fillet the selected vertex of a profile by dragging the mouse inwards
-# the max fillet radius is reached at the shortest delta of surrounding verts.
-
-# [x] MILESTONE 1 
-# [x] get selected vertex index. 
-# [x] get indices of attached verts.
-# [x] get their lengths, return shortest.
-# [x] shortest length is max fillet radius.
-#
-# [x] MILESTONE 2
-# [x] draw gl bevel line from both edges (bev_edge1, bev_edge2)
-# [x] find center of bevel line
-# [x] draw centre guide line.
-# [x] call new found point 'fillet_centre"
-# [x] calculate verts 'KAPPA'
-# [x] calculate verts 'TRIG'
-#
-# [ ] MILESTONE 3
-# [x] draw faux vertices
-# [x] draw opengl filleted line.
-# [x] allow view rotate, zoom
-# [x] allow ctrl+numpad +/- to define segment numbers.
-# [x] esc/rclick to cancel.
-# [x] sliders update in realtime
-# [ ] make shift+rightlick, draw manipulation line to mouse cursor.
-# [ ] enter to accept, and make real.
-# [ ] make faces [ tri, quad ]
-# [ ] user must apply all transforms, or matrix * vector
-
-
-# ============================================================================
 
 ''' temporary constants, switches '''
 
@@ -184,6 +152,91 @@ def get_correct_verts(arc_centre, arc_start, arc_end, NUM_VERTS, context):
 
 
 
+''' generate the geometry already! '''
+
+
+def generate_geometry_already(self, context):
+    
+    
+    radius_rate = bpy.context.scene.MyMove
+    if radius_rate == 0.0 or radius_rate == 1.0:
+        # why?
+        report_string = "pick values between, and exluding, 0.0 and 1.0"
+        self.report({'INFO'}, report_string)
+
+        return
+    
+    NUM_VERTS = context.scene.NumVerts
+    mode = context.scene.FilletMode
+    points, guide_verts = init_functions(self, context)
+        
+    # get control points and knots.
+    h_control = guide_verts[0]
+    radial_centre = guide_verts[1]
+    knot1, knot2 = points[0], points[1]
+
+    # draw fillet ( 2 modes )        
+    if mode == 'KAPPA':
+        kappa_ctrl_1 = knot1.lerp(h_control, context.scene.CurveHandle1)
+        kappa_ctrl_2 = knot2.lerp(h_control, context.scene.CurveHandle2)
+        arc_verts = bezlerp(knot1, kappa_ctrl_1, kappa_ctrl_2, knot2, NUM_VERTS)
+
+    if mode == 'TRIG':
+        arc_centre = radial_centre        
+        arc_start = knot1
+        arc_end = knot2
+        arc_verts = get_correct_verts(arc_centre, arc_start, arc_end, 
+                                        NUM_VERTS, context)
+    
+    bpy.ops.object.mode_set(mode='OBJECT')
+    obj = context.object
+
+    # make vertices
+    obj.data.vertices.add(NUM_VERTS)
+    vertex_counter = NUM_VERTS
+    for vert in range(len(arc_verts)):
+        obj.data.vertices[-vertex_counter].co = arc_verts[vert]        
+        vertex_counter -= 1
+    
+    
+    # build edges, find a prettier way to do this. it's ridiculous.
+    NUM_EDGES = (NUM_VERTS - 1)
+    obj.data.edges.add(NUM_EDGES)
+
+    # must count current verts first
+    current_vert_count = len(bpy.context.object.data.vertices)
+    edge_counter = -NUM_EDGES
+    vertex_ID = current_vert_count - NUM_VERTS
+    for edge in range(NUM_VERTS-1):
+        a = vertex_ID
+        b = vertex_ID+1
+        obj.data.edges[edge_counter].vertices = [a, b]
+        print(str(edge_counter)+"[", a, ",", b, "]")
+
+        edge_counter += 1
+        vertex_ID += 1
+    
+    # TODO
+    # add two more edges
+    # connect 
+    # - found_index[0] with last_vertex
+    # - found_index[1] with last_vertex - num_verts (-1?)
+    
+    # then delete 'active' vert (should still be selected! ) YAY!
+    
+    obj.data.update()
+
+    print("generate_geometry_already(self, context) " )
+    
+    bpy.ops.object.mode_set(mode='EDIT')
+    # return arc_verts
+    return
+
+
+
+
+
+
 
 ''' director function '''
 
@@ -305,15 +358,13 @@ def draw_text(context, location, NUM_VERTS):
    
 def draw_callback_px(self, context):
     
-    objlist = context.selected_objects
-    names_of_empties = [i.name for i in objlist]
-
     region = context.region
     rv3d = context.space_data.region_3d
     points, guide_verts = init_functions(self, context)
     
     NUM_VERTS = context.scene.NumVerts
     mode = context.scene.FilletMode
+
     # draw bevel
     draw_polyline_from_coordinates(context, points, "GL_LINE_STIPPLE")
     
@@ -384,10 +435,10 @@ class UIPanel(bpy.types.Panel):
     scn.NumVerts = bpy.props.IntProperty(min=2, max=64, default=12,
                                             name="number of verts")
     
-    scn.CurveHandle1 = bpy.props.FloatProperty( min=0.0, max=1.0, 
+    scn.CurveHandle1 = bpy.props.FloatProperty( min=0.0, max=4.0, 
                                                 default = KAPPA,
                                                 name="handle1")
-    scn.CurveHandle2 = bpy.props.FloatProperty( min=0.0, max=1.0, 
+    scn.CurveHandle2 = bpy.props.FloatProperty( min=0.0, max=4.0, 
                                                 default = KAPPA,
                                                 name="handle2")
     
@@ -452,7 +503,7 @@ class OBJECT_OT_draw_fillet(bpy.types.Operator):
     bl_options = {'REGISTER', 'UNDO'}
     
     # i understand that a lot of these ifs are redundant, scheduled for
-    # deletion.
+    # deletion. is 'RELEASE' redundant for keys?
    
     def modal(self, context, event):
         context.area.tag_redraw()
@@ -513,7 +564,13 @@ class OBJECT_OT_draw_fillet(bpy.types.Operator):
             context.area.tag_redraw()
             return {'PASS_THROUGH'} 
         
-        
+        # make real
+        if event.type in ('RET','NUMPAD_ENTER') and event.value == 'RELEASE':
+            print("Make geometry")
+            generate_geometry_already(self, context)
+            context.region.callback_remove(self._handle)            
+            return {'CANCELLED'}     
+                        
             
         # context.area.tag_redraw()
         return {'PASS_THROUGH'}
