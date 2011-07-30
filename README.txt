@@ -3,6 +3,8 @@
 # fillet the selected vertex of a profile by dragging the mouse inwards
 # the max fillet radius is reached at the shortest delta of surrounding verts.
 
+# warning. using ctrl+numpad/minus to change the current selection of vertices will result in no changes. no fillet.
+
 # [x] MILESTONE 1 
 # [x] get selected vertex index. 
 # [x] get indices of attached verts.
@@ -21,7 +23,7 @@
 # [x] draw faux vertices
 # [x] draw opengl filleted line.
 # [x] allow view rotate, zoom
-# [x] allow ctrl+numpad +/- to define segment numbers.
+# [x] allow shift+numpad +/- to define segment numbers.
 # [x] esc/rclick to cancel.
 # [x] sliders update in realtime
 # [x] enter to accept, and make real.
