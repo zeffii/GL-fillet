@@ -1,4 +1,4 @@
-![GL-fillet](https://github.com/zeffii/GL-fillet/blob/master/opengl_blender_overlay_drawing.png)
+![GL-fillet](https://github.com/zeffii/GL-fillet/raw/master/opengl_blender_overlay_drawing.png)
 
 OBJECTIVE
 
