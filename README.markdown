@@ -1,7 +1,7 @@
 ![GL-fillet](https://github.com/zeffii/GL-fillet/raw/master/opengl_blender_overlay_drawing.png)
 
-OBJECTIVE  
-  
+Objective    
+-------------    
 fillet the selected vertex of a profile by dragging the mouse inwards  
 the max fillet radius is reached at the shortest delta of surrounding verts.  
   
