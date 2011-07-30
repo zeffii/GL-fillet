@@ -18,14 +18,14 @@ warning. using `"ctrl+numpad/minus"` to change the current selection of vertices
 [x] find center of bevel line  
 [x] draw centre guide line.  
 [x] call new found point 'fillet_centre"  
-[x] calculate verts 'KAPPA'  
-[x] calculate verts 'TRIG'  
+[x] calculate verts `"KAPPA"`  
+[x] calculate verts `"TRIG"`  
   
 [ ] MILESTONE 3  
 [x] draw faux vertices  
 [x] draw opengl filleted line.  
 [x] allow view rotate, zoom  
-[x] allow shift+numpad +/- to define segment numbers.  
+[x] allow `"shift+numpad +/-"` to define segment numbers.  
 [x] esc/rclick to cancel.  
 [x] sliders update in realtime  
 [x] enter to accept, and make real.  
