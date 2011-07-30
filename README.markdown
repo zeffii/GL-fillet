@@ -7,14 +7,14 @@ the max fillet radius is reached at the shortest delta of surrounding verts.
   
 warning. using `"ctrl+numpad +/-"` to change the current selection of vertices will result in no changes. no fillet.  
   
-[x] Milestone 1  
+Milestone 1  
 -------------  
 [x] get selected vertex index.  
 [x] get indices of attached verts.  
 [x] get their lengths, return shortest.  
 [x] shortest length is max fillet radius.  
   
-[x] Milestone 2  
+Milestone 2  
 -------------  
 [x] draw gl bevel line from both edges (bev_edge1, bev_edge2)  
 [x] find center of bevel line  
@@ -23,7 +23,7 @@ warning. using `"ctrl+numpad +/-"` to change the current selection of vertices w
 [x] calculate verts `"KAPPA"`  
 [x] calculate verts `"TRIG"`  
   
-[ ] Milestone 3  
+Milestone 3  
 -------------  
 [x] draw faux vertices  
 [x] draw opengl filleted line.  
