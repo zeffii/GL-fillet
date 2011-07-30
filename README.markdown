@@ -29,9 +29,9 @@ Milestone 3
 [x] draw opengl filleted line.  
 [x] allow view rotate, zoom  
 [x] allow `"shift+numpad +/-"` to define segment numbers.  
-[x] esc/rclick to cancel.  
+[x] `"esc/rclick"` to cancel.  
 [x] sliders update in realtime  
-[x] enter to accept, and make real.  
+[x] `"enter to accept"`, and make real.  
 [x] checks revision, uses code according to your blender release.  
 [ ] make shift+rightlick, draw manipulation line to mouse cursor.  
 [ ] cleanup  
