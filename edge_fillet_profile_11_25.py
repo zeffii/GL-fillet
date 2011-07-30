@@ -510,8 +510,9 @@ class UIPanel(bpy.types.Panel):
         found_index = find_index_of_selected_vertex(obj)
         if found_index != None:
             connected_verts = find_connected_verts(obj, found_index)
-            if connected_verts != None:       
-                return True
+            if connected_verts != None:
+                if context.object.mode == 'EDIT':   
+                    return True
         
     
     def draw(self, context):
