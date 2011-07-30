@@ -5,7 +5,7 @@ OBJECTIVE
 fillet the selected vertex of a profile by dragging the mouse inwards  
 the max fillet radius is reached at the shortest delta of surrounding verts.  
   
-warning. using `"ctrl+numpad/minus"` to change the current selection of vertices will result in no changes. no fillet.  
+warning. using `"ctrl+numpad +/-"` to change the current selection of vertices will result in no changes. no fillet.  
   
 [x] MILESTONE 1  
 [x] get selected vertex index.  
