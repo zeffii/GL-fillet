@@ -1,3 +1,25 @@
+'''
+by Dealga McArdle, july 2011.
+
+BEGIN GPL LICENSE BLOCK
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software Foundation,
+Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+END GPL LICENCE BLOCK
+'''
+
 import bpy
 import bgl
 import blf
@@ -9,6 +31,10 @@ from mathutils import Vector
 from mathutils.geometry import interpolate_bezier as bezlerp
 from bpy_extras.view3d_utils import location_3d_to_region_2d as loc3d2d
 
+
+# note to the user: several of my methods here are probably not 'best practice'
+# please temper your perception of the script with the knowledge that it is 
+# an experiment that got a little out of hand.
 
 
 ''' temporary constants, switches '''
