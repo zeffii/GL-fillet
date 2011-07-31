@@ -188,7 +188,10 @@ def get_correct_verts(arc_centre, arc_start, arc_end, NUM_VERTS, context):
 
 
 def generate_geometry_already(self, context):
-    
+
+
+    if init_functions(self, context) == None:
+        return    
     
     radius_rate = bpy.context.scene.MyMove
     if radius_rate == 0.0:
@@ -200,6 +203,7 @@ def generate_geometry_already(self, context):
     
     NUM_VERTS = context.scene.NumVerts
     mode = context.scene.FilletMode
+            
     points, guide_verts = init_functions(self, context)
         
     # get control points and knots.
@@ -311,14 +315,14 @@ def init_functions(self, context):
         connected_verts = find_connected_verts(obj, found_index)
     else:
         print("select one vertex, no more, no less")
-        return
+        return None
     
 
     # Find connected vertices.
     if connected_verts == None:
         print("vertex connected to only 1 other vert, or none at all")
         print("remove doubles, the script operates on vertices with 2 edges")
-        return
+        return None
     else:
         print(connected_verts)
     
@@ -412,6 +416,9 @@ def draw_text(context, location, NUM_VERTS):
    
 def draw_callback_px(self, context):
     
+    if init_functions(self, context) == None:
+        return
+        
     region = context.region
     rv3d = context.space_data.region_3d
     points, guide_verts = init_functions(self, context)
