@@ -198,7 +198,6 @@ def generate_geometry_already(self, context):
         # why?
         report_string = "pick values above 0.0000"
         self.report({'INFO'}, report_string)
-
         return
     
     NUM_VERTS = context.scene.NumVerts
@@ -226,7 +225,8 @@ def generate_geometry_already(self, context):
     
     bpy.ops.object.mode_set(mode='OBJECT')
     obj = context.object
-    
+
+    # not sure if this is still needed.    
     removable_vert = find_index_of_selected_vertex(obj)
     if removable_vert == None:
         # user has unselected it.
@@ -256,7 +256,8 @@ def generate_geometry_already(self, context):
         a = vertex_ID
         b = vertex_ID+1
         obj.data.edges[edge_counter].vertices = [a, b]
-        print(str(edge_counter)+"[", a, ",", b, "]")
+        if DEBUG:
+            print(str(edge_counter)+"[", a, ",", b, "]")
 
         edge_counter += 1
         vertex_ID += 1
@@ -311,30 +312,37 @@ def init_functions(self, context):
     # Finding vertex.    
     found_index = find_index_of_selected_vertex(obj)
     if found_index != None:
-        print("you selected vertex with index", found_index)
+        if DEBUG:
+            print("you selected vertex with index", found_index)
         connected_verts = find_connected_verts(obj, found_index)
     else:
-        print("select one vertex, no more, no less")
+        if DEBUG:
+            print("select one vertex, no more, no less")
         return None
     
 
     # Find connected vertices.
     if connected_verts == None:
-        print("vertex connected to only 1 other vert, or none at all")
-        print("remove doubles, the script operates on vertices with 2 edges")
+        if DEBUG:
+            print("vertex connected to only 1 other vert, or none at all")
+            print("remove doubles, the script operates on vertices with 2 edges")
         return None
     else:
-        print(connected_verts)
+        if DEBUG:
+            print(connected_verts)
     
 
     # reaching this stage means the vertex has 2 connected vertices. good.
     # Find distances and maximum radius.
     distances = find_distances(obj, connected_verts, found_index)
-    for d in distances:
-        print("from", found_index, "to", d[0], "=", d[1])
 
+    if DEBUG:
+        for d in distances:
+            print("from", found_index, "to", d[0], "=", d[1])
+    
     max_rad = min(distances[0][1],distances[1][1])
-    print("max radius", max_rad)
+    if DEBUG:    
+        print("max radius", max_rad)
 
     return generate_fillet(obj, connected_verts, max_rad, found_index)
 
@@ -489,7 +497,6 @@ class UIPanel(bpy.types.Panel):
                                                 ('KAPPA', 'KAPPA', '')),
                                             name = 'filletmodes',
                                             default = 'TRIG' )
-
     
     scn.MyMove = bpy.props.FloatProperty(min=0.0, max=1.0, 
                                             default=0.5, precision=5,
@@ -574,7 +581,7 @@ class OBJECT_OT_draw_fillet(bpy.types.Operator):
         
         if event.type == 'ESC':
             if event.value == 'RELEASE':
-                print("discontinue drawing")
+                # print("discontinue drawing")
                 context.area.tag_redraw()
                 context.region.callback_remove(self._handle)
                 return {'CANCELLED'}
@@ -613,14 +620,14 @@ class OBJECT_OT_draw_fillet(bpy.types.Operator):
         # allows you to rotate around.        
         if event.type == 'MIDDLEMOUSE':
             # context.area.tag_redraw()
-            print(event.value) 
+            # print(event.value) 
             if event.value == 'PRESS':
-                print("Allow to rotate")
+                # print("Allow to rotate")
                 context.area.tag_redraw()
                 return {'PASS_THROUGH'}           
             if event.value == 'RELEASE':
                 context.area.tag_redraw()
-                print("allow to interact with ui")
+                # print("allow to interact with ui")
                 return {'PASS_THROUGH'}
         
         # allows you to zoom.
@@ -630,7 +637,7 @@ class OBJECT_OT_draw_fillet(bpy.types.Operator):
         
         # make real
         if event.type in ('RET','NUMPAD_ENTER') and event.value == 'RELEASE':
-            print("Make geometry")
+            # print("Make geometry")
             generate_geometry_already(self, context)
             context.region.callback_remove(self._handle)            
             return {'CANCELLED'}     
