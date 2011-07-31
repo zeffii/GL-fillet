@@ -2,7 +2,7 @@
 
 Objective    
 -------------    
-fillet the selected vertex of a profile by dragging the mouse inwards  
+fillet the selected vertex of a profile by dragging the mouse inwards (for now use the slider)  
 the max fillet radius is reached at the shortest delta of surrounding verts.  
   
 warning. using `"ctrl+numpad +/-"` to change the current selection of vertices will result in no changes. no fillet.  
