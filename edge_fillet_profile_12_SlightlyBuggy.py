@@ -1,3 +1,6 @@
+# buggy in the sense that you must first apply all transforms 
+# / scale /location / rotation, to a mesh.
+
 '''
 by Dealga McArdle, july 2011.
 
