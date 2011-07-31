@@ -165,19 +165,16 @@ def get_correct_verts(arc_centre, arc_start, arc_end, NUM_VERTS, context):
     
     trig_arc_verts = []
 
-    # optimized, instead of checking revision for each vertex in the loop.
     # means more code, but meh.
     if BUILD_REV >= CHANGE_REV:
         for i in range(NUM_VERTS):
             rotation_matrix = mathutils.Matrix.Rotation(i*-div_angle, 3, axis)
-            
             trig_point = rotation_matrix * (arc_start - obj_centre - arc_centre)
             trig_point += obj_centre + arc_centre
             trig_arc_verts.append(trig_point)        
     else:    
         for i in range(NUM_VERTS):
             rotation_matrix = mathutils.Matrix.Rotation(i*-div_angle, 3, axis)
- 
             trig_point = (arc_start - obj_centre - arc_centre) * rotation_matrix
             trig_point += obj_centre + arc_centre
             trig_arc_verts.append(trig_point)        
@@ -185,10 +182,13 @@ def get_correct_verts(arc_centre, arc_start, arc_end, NUM_VERTS, context):
     return trig_arc_verts
 
 
+# this function produces global coordinates.
+def get_arc_from_state(points, guide_verts, context):
 
-def get_arc_from_state(points, guide_verts, mode, NUM_VERTS, context):
+    NUM_VERTS = context.scene.NumVerts
+    mode = context.scene.FilletMode
 
-     # get control points and knots.
+    # get control points and knots.
     h_control = guide_verts[0]
     radial_centre = guide_verts[1]
     knot1, knot2 = points[0], points[1]
@@ -230,7 +230,7 @@ def generate_geometry_already(self, context):
     mode = context.scene.FilletMode
     points, guide_verts = init_functions(self, context)
 
-    
+    # changing mode   
     bpy.ops.object.mode_set(mode='OBJECT')
     obj = context.object
 
@@ -242,7 +242,7 @@ def generate_geometry_already(self, context):
         self.report({'INFO'}, report_string)
         return
 
-    arc_verts = get_arc_from_state(points, guide_verts, mode, NUM_VERTS, context)
+    arc_verts = get_arc_from_state(points, guide_verts, context)
     idx1, idx2 = return_connected_from_object(obj)
 
     # make vertices
@@ -264,9 +264,6 @@ def generate_geometry_already(self, context):
         a = vertex_ID
         b = vertex_ID+1
         obj.data.edges[edge_counter].vertices = [a, b]
-        if DEBUG:
-            print(str(edge_counter)+"[", a, ",", b, "]")
-
         edge_counter += 1
         vertex_ID += 1
     
@@ -439,9 +436,7 @@ def draw_callback_px(self, context):
     rv3d = context.space_data.region_3d
     points, guide_verts = init_functions(self, context)
     
-    NUM_VERTS = context.scene.NumVerts
-    mode = context.scene.FilletMode
-    arc_verts = get_arc_from_state(points, guide_verts, mode, NUM_VERTS, context)
+    arc_verts = get_arc_from_state(points, guide_verts, context)
 
     # draw bevel, followed by symmetry line, then fillet edge loop
     draw_polyline_from_coordinates(context, points, "GL_LINE_STIPPLE")
@@ -454,7 +449,7 @@ def draw_callback_px(self, context):
         draw_points(context, [guide_verts[1]], 5.2, gl_col2)
     
     # draw bottom left, above object name the number of vertices in the fillet
-    draw_text(context, (65, 30), NUM_VERTS)
+    draw_text(context, (65, 30), context.scene.NumVerts)
         
     # restore opengl defaults
     bgl.glLineWidth(1)
