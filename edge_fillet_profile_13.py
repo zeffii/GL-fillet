@@ -1,3 +1,6 @@
+# buggy in the sense that you must first apply all transforms 
+# / scale /location / rotation, to a mesh.
+
 '''
 by Dealga McArdle, july 2011.
 
@@ -162,19 +165,16 @@ def get_correct_verts(arc_centre, arc_start, arc_end, NUM_VERTS, context):
     
     trig_arc_verts = []
 
-    # optimized, instead of checking revision for each vertex in the loop.
     # means more code, but meh.
     if BUILD_REV >= CHANGE_REV:
         for i in range(NUM_VERTS):
             rotation_matrix = mathutils.Matrix.Rotation(i*-div_angle, 3, axis)
-            
             trig_point = rotation_matrix * (arc_start - obj_centre - arc_centre)
             trig_point += obj_centre + arc_centre
             trig_arc_verts.append(trig_point)        
     else:    
         for i in range(NUM_VERTS):
             rotation_matrix = mathutils.Matrix.Rotation(i*-div_angle, 3, axis)
- 
             trig_point = (arc_start - obj_centre - arc_centre) * rotation_matrix
             trig_point += obj_centre + arc_centre
             trig_arc_verts.append(trig_point)        
@@ -182,10 +182,13 @@ def get_correct_verts(arc_centre, arc_start, arc_end, NUM_VERTS, context):
     return trig_arc_verts
 
 
+# this function produces global coordinates.
+def get_arc_from_state(points, guide_verts, context):
 
-def get_arc_from_state(points, guide_verts, mode, NUM_VERTS, context):
+    NUM_VERTS = context.scene.NumVerts
+    mode = context.scene.FilletMode
 
-     # get control points and knots.
+    # get control points and knots.
     h_control = guide_verts[0]
     radial_centre = guide_verts[1]
     knot1, knot2 = points[0], points[1]
@@ -212,35 +215,20 @@ def get_arc_from_state(points, guide_verts, mode, NUM_VERTS, context):
 
 def generate_geometry_already(self, context):
 
-
-    if init_functions(self, context) == None:
-        return    
-    
     radius_rate = bpy.context.scene.MyMove
-    if radius_rate == 0.0:
-        # why?
-        report_string = "pick values above 0.0000"
-        self.report({'INFO'}, report_string)
-        return
-    
     NUM_VERTS = context.scene.NumVerts
-    mode = context.scene.FilletMode
     points, guide_verts = init_functions(self, context)
 
-    
+    # changing mesh 3dview mode, requires object mode.
     bpy.ops.object.mode_set(mode='OBJECT')
+
+    # we need a little bit of info from the obj
     obj = context.object
-
-    # not sure if this is still needed.    
     removable_vert = find_index_of_selected_vertex(obj)
-    if removable_vert == None:
-        # user has unselected it.
-        report_string = "Atleast one vertex must be selected"
-        self.report({'INFO'}, report_string)
-        return
-
-    arc_verts = get_arc_from_state(points, guide_verts, mode, NUM_VERTS, context)
     idx1, idx2 = return_connected_from_object(obj)
+
+    # whatever the mode is and user settings are, this returns the arc points.
+    arc_verts = get_arc_from_state(points, guide_verts, context)
 
     # make vertices
     obj.data.vertices.add(NUM_VERTS)
@@ -261,9 +249,6 @@ def generate_geometry_already(self, context):
         a = vertex_ID
         b = vertex_ID+1
         obj.data.edges[edge_counter].vertices = [a, b]
-        if DEBUG:
-            print(str(edge_counter)+"[", a, ",", b, "]")
-
         edge_counter += 1
         vertex_ID += 1
     
@@ -275,14 +260,11 @@ def generate_geometry_already(self, context):
     obj.data.edges[-1].vertices = [idx2, last_new_vert]
     
     # then delete 'active' vert YAY!
-    # do that here. ugly code here.
     obj.data.update()
     bpy.ops.object.mode_set(mode='EDIT')
 
-    # unselect all.
+    # unselect all, perform vertex selection in object mode
     bpy.ops.mesh.select_all(action='TOGGLE')
-    
-    # return to object mode to perform vertex selection
     bpy.ops.object.mode_set(mode='OBJECT')
     bpy.context.active_object.data.vertices[removable_vert].select = True
 
@@ -307,12 +289,7 @@ def generate_geometry_already(self, context):
 
 
 def init_functions(self, context):
-
     obj = context.object 
-    
-    # [TODO] eventually the print statements can be moved elsewhere.
-    # if found_index or connected vertex are None, code should never
-    # reach this point anyway.
 
     # Finding vertex.    
     found_index = find_index_of_selected_vertex(obj)
@@ -324,7 +301,6 @@ def init_functions(self, context):
         if DEBUG:
             print("select one vertex, no more, no less")
         return None
-    
 
     # Find connected vertices.
     if connected_verts == None:
@@ -335,7 +311,6 @@ def init_functions(self, context):
     else:
         if DEBUG:
             print(connected_verts)
-    
 
     # reaching this stage means the vertex has 2 connected vertices. good.
     # Find distances and maximum radius.
@@ -388,7 +363,7 @@ def draw_points(context, points, size, gl_col):
     region = context.region
     rv3d = context.space_data.region_3d
     
-    
+    # needed for adjusting the size of gl_points    
     bgl.glEnable(bgl.GL_POINT_SMOOTH)
     bgl.glPointSize(size)
     bgl.glBlendFunc(bgl.GL_SRC_ALPHA, bgl.GL_ONE_MINUS_SRC_ALPHA)
@@ -436,9 +411,7 @@ def draw_callback_px(self, context):
     rv3d = context.space_data.region_3d
     points, guide_verts = init_functions(self, context)
     
-    NUM_VERTS = context.scene.NumVerts
-    mode = context.scene.FilletMode
-    arc_verts = get_arc_from_state(points, guide_verts, mode, NUM_VERTS, context)
+    arc_verts = get_arc_from_state(points, guide_verts, context)
 
     # draw bevel, followed by symmetry line, then fillet edge loop
     draw_polyline_from_coordinates(context, points, "GL_LINE_STIPPLE")
@@ -451,7 +424,7 @@ def draw_callback_px(self, context):
         draw_points(context, [guide_verts[1]], 5.2, gl_col2)
     
     # draw bottom left, above object name the number of vertices in the fillet
-    draw_text(context, (65, 30), NUM_VERTS)
+    draw_text(context, (65, 30), context.scene.NumVerts)
         
     # restore opengl defaults
     bgl.glLineWidth(1)
@@ -481,7 +454,7 @@ class UIPanel(bpy.types.Panel):
                                             name = 'filletmodes',
                                             default = 'TRIG' )
     
-    scn.MyMove = bpy.props.FloatProperty(min=0.0, max=1.0, 
+    scn.MyMove = bpy.props.FloatProperty(min=0.00001, max=1.0, 
                                             default=0.5, precision=5,
                                             name="ratio of shortest edge")
     
@@ -495,13 +468,8 @@ class UIPanel(bpy.types.Panel):
                                                 default = KAPPA,
                                                 name="handle2")
     
-    # figuring out how to prevent it from redrawing, when check_vertex pressed
-    # scn.FILLET_DRAWING = bpy.props.BoolProperty(default=False)
-    
-    
     @classmethod
     def poll(self, context):
-        
         obj = context.object
         
         found_index = find_index_of_selected_vertex(obj)
@@ -598,7 +566,6 @@ class OBJECT_OT_draw_fillet(bpy.types.Operator):
                     context.scene.NumVerts -= 1
                 return {'PASS_THROUGH'} 
     
-
         
         # allows you to rotate around.        
         if event.type == 'MIDDLEMOUSE':
@@ -620,11 +587,17 @@ class OBJECT_OT_draw_fillet(bpy.types.Operator):
         
         # make real
         if event.type in ('RET','NUMPAD_ENTER') and event.value == 'RELEASE':
-            # print("Make geometry")
-            generate_geometry_already(self, context)
-            context.region.callback_remove(self._handle)            
-            return {'CANCELLED'}     
-                        
+            # before calling the function, let's check if the state is right.
+            if init_functions(self, context) != None:
+                generate_geometry_already(self, context)
+                context.region.callback_remove(self._handle)
+
+                # user has unselected it.                
+                if find_index_of_selected_vertex(context.object) == None:
+                    report_string = "Atleast one vertex must be selected"
+                    self.report({'INFO'}, report_string)
+
+                return {'CANCELLED'}
             
         # context.area.tag_redraw()
         return {'PASS_THROUGH'}
