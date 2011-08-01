@@ -219,14 +219,16 @@ def generate_geometry_already(self, context):
     NUM_VERTS = context.scene.NumVerts
     points, guide_verts = init_functions(self, context)
 
-    # changing mesh 3dview mode   
+    # changing mesh 3dview mode, requires object mode.
     bpy.ops.object.mode_set(mode='OBJECT')
-    obj = context.object
 
-    # not sure if this is still needed.    
+    # we need a little bit of info from the obj
+    obj = context.object
     removable_vert = find_index_of_selected_vertex(obj)
-    arc_verts = get_arc_from_state(points, guide_verts, context)
     idx1, idx2 = return_connected_from_object(obj)
+
+    # whatever the mode is and user settings are, this returns the arc points.
+    arc_verts = get_arc_from_state(points, guide_verts, context)
 
     # make vertices
     obj.data.vertices.add(NUM_VERTS)
