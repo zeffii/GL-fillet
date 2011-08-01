@@ -8,14 +8,12 @@ the max fillet radius is reached at the shortest delta of surrounding verts.
 warning. using `"ctrl+numpad +/-"` to change the current selection of vertices will result in no changes. no fillet.  
   
 Milestone 1  
--------------  
 [x] get selected vertex index.  
 [x] get indices of attached verts.  
 [x] get their lengths, return shortest.  
 [x] shortest length is max fillet radius.  
   
 Milestone 2  
--------------  
 [x] draw gl bevel line from both edges (bev_edge1, bev_edge2)  
 [x] find center of bevel line  
 [x] draw centre guide line.  
@@ -24,7 +22,6 @@ Milestone 2
 [x] calculate verts `"TRIG"`  
   
 Milestone 3  
--------------  
 [x] draw faux vertices  
 [x] draw opengl filleted line.  
 [x] allow view rotate, zoom  
@@ -33,7 +30,8 @@ Milestone 3
 [x] sliders update in realtime  
 [x] `"enter to accept"`, and make real.  
 [x] checks revision, uses code according to your blender release.  
+[x] cleanup  
+[ ] create negative / positive switch.  
 [ ] make shift+rightlick, draw manipulation line to mouse cursor.  
-[ ] cleanup  
-[ ] make faces [ tri, quad ]  
-[ ] user must apply all transforms, or matrix * vector  
+[ ] make faces [ tri, quad ] (quad option only available with appropriate num_verts)  
+[ ] user must apply all transforms, or matrix * vector  (this i don't understand yet)
