@@ -384,7 +384,7 @@ def draw_points(context, points, size, gl_col):
     region = context.region
     rv3d = context.space_data.region_3d
     
-    
+    # needed for adjusting the size of gl_points    
     bgl.glEnable(bgl.GL_POINT_SMOOTH)
     bgl.glPointSize(size)
     bgl.glBlendFunc(bgl.GL_SRC_ALPHA, bgl.GL_ONE_MINUS_SRC_ALPHA)
@@ -489,13 +489,8 @@ class UIPanel(bpy.types.Panel):
                                                 default = KAPPA,
                                                 name="handle2")
     
-    # figuring out how to prevent it from redrawing, when check_vertex pressed
-    # scn.FILLET_DRAWING = bpy.props.BoolProperty(default=False)
-    
-    
     @classmethod
     def poll(self, context):
-        
         obj = context.object
         
         found_index = find_index_of_selected_vertex(obj)
@@ -617,9 +612,8 @@ class OBJECT_OT_draw_fillet(bpy.types.Operator):
             # print("Make geometry")
             generate_geometry_already(self, context)
             context.region.callback_remove(self._handle)            
-            return {'CANCELLED'}     
-                        
-            
+            return {'CANCELLED'}
+        
         # context.area.tag_redraw()
         return {'PASS_THROUGH'}
     
