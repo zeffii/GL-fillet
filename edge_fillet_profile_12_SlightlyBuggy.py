@@ -214,18 +214,8 @@ def get_arc_from_state(points, guide_verts, context):
 
 
 def generate_geometry_already(self, context):
-    # check 1
-    if init_functions(self, context) == None:
-        return    
-    
-    # check 2
+
     radius_rate = bpy.context.scene.MyMove
-    if radius_rate == 0.0:
-        # why?
-        report_string = "pick values above 0.0000"
-        self.report({'INFO'}, report_string)
-        return
-    
     NUM_VERTS = context.scene.NumVerts
     points, guide_verts = init_functions(self, context)
 
@@ -235,12 +225,6 @@ def generate_geometry_already(self, context):
 
     # not sure if this is still needed.    
     removable_vert = find_index_of_selected_vertex(obj)
-    if removable_vert == None:
-        # user has unselected it.
-        report_string = "Atleast one vertex must be selected"
-        self.report({'INFO'}, report_string)
-        return
-
     arc_verts = get_arc_from_state(points, guide_verts, context)
     idx1, idx2 = return_connected_from_object(obj)
 
@@ -303,12 +287,7 @@ def generate_geometry_already(self, context):
 
 
 def init_functions(self, context):
-
     obj = context.object 
-    
-    # [TODO] eventually the print statements can be moved elsewhere.
-    # if found_index or connected vertex are None, code should never
-    # reach this point anyway.
 
     # Finding vertex.    
     found_index = find_index_of_selected_vertex(obj)
@@ -320,7 +299,6 @@ def init_functions(self, context):
         if DEBUG:
             print("select one vertex, no more, no less")
         return None
-    
 
     # Find connected vertices.
     if connected_verts == None:
@@ -331,7 +309,6 @@ def init_functions(self, context):
     else:
         if DEBUG:
             print(connected_verts)
-    
 
     # reaching this stage means the vertex has 2 connected vertices. good.
     # Find distances and maximum radius.
@@ -475,7 +452,7 @@ class UIPanel(bpy.types.Panel):
                                             name = 'filletmodes',
                                             default = 'TRIG' )
     
-    scn.MyMove = bpy.props.FloatProperty(min=0.0, max=1.0, 
+    scn.MyMove = bpy.props.FloatProperty(min=0.00001, max=1.0, 
                                             default=0.5, precision=5,
                                             name="ratio of shortest edge")
     
@@ -587,7 +564,6 @@ class OBJECT_OT_draw_fillet(bpy.types.Operator):
                     context.scene.NumVerts -= 1
                 return {'PASS_THROUGH'} 
     
-
         
         # allows you to rotate around.        
         if event.type == 'MIDDLEMOUSE':
@@ -609,11 +585,18 @@ class OBJECT_OT_draw_fillet(bpy.types.Operator):
         
         # make real
         if event.type in ('RET','NUMPAD_ENTER') and event.value == 'RELEASE':
-            # print("Make geometry")
-            generate_geometry_already(self, context)
-            context.region.callback_remove(self._handle)            
-            return {'CANCELLED'}
-        
+            # before calling the function, let's check if the state is right.
+            if init_functions(self, context) != None:
+                generate_geometry_already(self, context)
+                context.region.callback_remove(self._handle)
+
+                # user has unselected it.                
+                if find_index_of_selected_vertex(context.object) == None:
+                    report_string = "Atleast one vertex must be selected"
+                    self.report({'INFO'}, report_string)
+
+                return {'CANCELLED'}
+            
         # context.area.tag_redraw()
         return {'PASS_THROUGH'}
     
