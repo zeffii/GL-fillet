@@ -214,11 +214,11 @@ def get_arc_from_state(points, guide_verts, context):
 
 
 def generate_geometry_already(self, context):
-
-
+    # check 1
     if init_functions(self, context) == None:
         return    
     
+    # check 2
     radius_rate = bpy.context.scene.MyMove
     if radius_rate == 0.0:
         # why?
@@ -227,10 +227,9 @@ def generate_geometry_already(self, context):
         return
     
     NUM_VERTS = context.scene.NumVerts
-    mode = context.scene.FilletMode
     points, guide_verts = init_functions(self, context)
 
-    # changing mode   
+    # changing mesh 3dview mode   
     bpy.ops.object.mode_set(mode='OBJECT')
     obj = context.object
 
@@ -275,14 +274,11 @@ def generate_geometry_already(self, context):
     obj.data.edges[-1].vertices = [idx2, last_new_vert]
     
     # then delete 'active' vert YAY!
-    # do that here. ugly code here.
     obj.data.update()
     bpy.ops.object.mode_set(mode='EDIT')
 
-    # unselect all.
+    # unselect all, perform vertex selection in object mode
     bpy.ops.mesh.select_all(action='TOGGLE')
-    
-    # return to object mode to perform vertex selection
     bpy.ops.object.mode_set(mode='OBJECT')
     bpy.context.active_object.data.vertices[removable_vert].select = True
 
