@@ -33,5 +33,5 @@ Milestone 3
 [x] cleanup  
 [ ] create negative / positive switch.  
 [ ] make shift+rightlick, draw manipulation line to mouse cursor.  
-[ ] make faces [ tri, quad ] (quad option only available with appropriate num_verts)  
+[ ] make faces tri, quad (quad option only available with appropriate num_verts)  
 [ ] user must apply all transforms, or matrix * vector  (this i don't understand yet)
