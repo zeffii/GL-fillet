@@ -6,7 +6,7 @@
     - go to object mode to let the script know what vertex you want to operate on  
     - back into editmode, hit Check Vertex. The fillet should start drawing  
     - adjust the settings to satisfy  
-    - hold shift and press numpad_plus / numpad_minus to adjust the segments  
+    - hold shift and press numpad_plus / numpad_minus to adjust the segments  range(2...64)
     - hit Enter to apply the fillet, or Esc to stop drawing.  
 
     Things to avoid  
