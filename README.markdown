@@ -11,7 +11,7 @@
 
     Things to avoid  
     - avoid pressing Check vertex if the fillet is already drawing.  
-    - don't try this on geometry that doesn't have all it's transforms applied (rotation,location,scale)
+    - don't try this on geometry that doesn't have all its transforms applied (rotation,location,scale)
     - telling me it doesn't work, without an error message or .blend case file.
 
 
