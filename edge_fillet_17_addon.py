@@ -480,7 +480,7 @@ class UIPanel(bpy.types.Panel):
     bl_region_type = "TOOL_PROPS"
  
     scn = bpy.types.Scene
-    object = bpy.context.object
+    # object = bpy.context.object
     
     scn.MeshVertexIndex = bpy.props.IntProperty(min=0, default=0)
     

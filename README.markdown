@@ -1,8 +1,22 @@
 ![GL-fillet](https://github.com/zeffii/GL-fillet/raw/master/opengl_blender_overlay_drawing.png)
 
-Objective    
--------------    
-fillet the selected vertex of a profile by dragging the mouse inwards (for now use the slider)  
+    Usage  
+    - Install or run the script from Text Editor  
+    - Select one vertex on the corner of two connected edges  
+    - go to object mode to let the script know what vertex you want to operate on  
+    - back into editmode, hit Check Vertex. The fillet should start drawing  
+    - adjust the settings to satisfy  
+    - hold shift and press numpad_plus / numpad_minus to adjust the segments  range(2...64)
+    - hit Enter to apply the fillet, or Esc to stop drawing.  
+
+    Things to avoid  
+    - avoid pressing Check vertex if the fillet is already drawing.  
+    - don't try this on geometry that doesn't have all its transforms applied (rotation,location,scale)
+    - telling me it doesn't work, without an error message or .blend case file.
+
+
+Objective  
+fillet the selected vertex of a profile.
 the max fillet radius is reached at the shortest delta of surrounding verts.  
   
 warning. using `"ctrl+numpad +/-"` to change the current selection of vertices will result in no changes. no fillet.  
@@ -31,7 +45,7 @@ Milestone 3
 [x] `"enter to accept"`, and make real.  
 [x] checks revision, uses code according to your blender release.  
 [x] cleanup  
-[ ] create negative / positive switch.  
+[x] create negative / positive switch.  
 [ ] make shift+rightlick, draw manipulation line to mouse cursor.  
 [ ] make faces tri, quad (quad option only available with appropriate num_verts)  
 [ ] user must apply all transforms, or matrix * vector  (this i don't understand yet)
