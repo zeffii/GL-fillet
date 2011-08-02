@@ -1,5 +1,5 @@
 ![GL-fillet](https://github.com/zeffii/GL-fillet/raw/master/opengl_blender_overlay_drawing.png)
-
+`
 Usage  
 - Install or run the script from Text Editor  
 - Select one vertex on the corner of two edges  
@@ -8,7 +8,7 @@ Usage
 - adjust the settings to satisfy  
 - hold shift and press numpad_plus / numpad_minus to adjust the segments  
 - hit Enter to apply the fillet, or Esc to stop drawing.
-
+`
 
 Objective  
 fillet the selected vertex of a profile.
