@@ -7,7 +7,12 @@
     - back into editmode, hit Check Vertex. The fillet should start drawing  
     - adjust the settings to satisfy  
     - hold shift and press numpad_plus / numpad_minus to adjust the segments  
-    - hit Enter to apply the fillet, or Esc to stop drawing.
+    - hit Enter to apply the fillet, or Esc to stop drawing.  
+
+    Things to avoid  
+    - avoid pressing Check vertex if the fillet is already drawing.  
+    - don't try this on geometry that doesn't have all it's transforms applied (rotation,location,scale)
+    - telling me it doesn't work, without an error message or .blend case file.
 
 
 Objective  
