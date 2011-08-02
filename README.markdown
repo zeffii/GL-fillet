@@ -2,7 +2,7 @@
 
     Usage  
     - Install or run the script from Text Editor  
-    - Select one vertex on the corner of two edges  
+    - Select one vertex on the corner of two connected edges  
     - go to object mode to let the script know what vertex you want to operate on  
     - back into editmode, hit Check Vertex. The fillet should start drawing  
     - adjust the settings to satisfy  
