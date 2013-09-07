@@ -639,7 +639,10 @@ class OBJECT_OT_draw_fillet(bpy.types.Operator):
             # before calling the function, let's check if the state is right.
             if init_functions(self, context) != None:
                 generate_geometry_already(self, context)
-                context.region.callback_remove(self._handle)
+                try:
+                    context.region.callback_remove(self._handle)
+                except:
+                    print('fixme')
 
                 # user has unselected it.                
                 if find_index_of_selected_vertex(context.object) == None:
