@@ -2,4 +2,4 @@
 
     Usage  
 
-    - Don't! Now you can use shift+B on a vertex instead.
+    - Don't! Now you can use shift+ctrl+B on a vertex instead.
