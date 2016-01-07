@@ -1,5 +1,3 @@
-# just GL drawing. bmesh returns verts and edges unsorted. so this needs to be solved first.
-
 import bpy
 import bgl
 import blf
@@ -95,7 +93,7 @@ def draw_func(self, context):
     bgl.glColor4f(0.0, 0.0, 0.0, 0.5)
     bgl.glLineWidth(2)
 
-    # 3d
+    # 3d lines
     bgl.glBegin(bgl.GL_LINES)
     for keys in edges:
         for k in keys:
@@ -103,11 +101,21 @@ def draw_func(self, context):
             bgl.glVertex3f(*coordinate)
     bgl.glEnd()
 
-    # # 3d
-    # bgl.glBegin(bgl.GL_LINE_STRIP)
-    # for x, y, z in verts:
-    #     bgl.glVertex3f(x, y, z)
-    # bgl.glEnd()    
+    # 3d points
+    vsize = 5
+    bgl.glEnable(bgl.GL_POINT_SIZE)
+    bgl.glEnable(bgl.GL_POINT_SMOOTH)
+    bgl.glHint(bgl.GL_POINT_SMOOTH_HINT, bgl.GL_NICEST)
+    bgl.glPointSize(vsize)    
+    bgl.glColor3f(1.0, 0.6, 0.3)
+    bgl.glBegin(bgl.GL_POINTS)
+    for x, y, z in verts:
+        bgl.glVertex3f(x, y, z)
+    bgl.glEnd()    
+
+    bgl.glDisable(bgl.GL_POINT_SIZE)
+    bgl.glDisable(bgl.GL_POINT_SMOOTH)
+
 
     # restore opengl defaults
     bgl.glLineWidth(1)
