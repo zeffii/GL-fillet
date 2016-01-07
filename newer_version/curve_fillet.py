@@ -176,6 +176,19 @@ class TCCurveBevel(bpy.types.Operator):
             # val = {"WHEELUPMOUSE": 1, "WHEELDOWNMOUSE": -1}.get(event.type)
             # self.segments += val
             return {'PASS_THROUGH'}
+        
+        if event.shift:
+            # take control of numpad plus / minus
+            if event.value == 'PRESS':
+                if event.type == 'NUMPAD_PLUS':
+                    if self.segments <= 64:
+                        self.segments += 1
+                    return {'PASS_THROUGH'}
+
+                if event.type == 'NUMPAD_MINUS':
+                    if self.segments > 1:
+                        self.segments -= 1
+                    return {'PASS_THROUGH'}
 
         return {'RUNNING_MODAL'}
 
