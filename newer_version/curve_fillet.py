@@ -1,3 +1,5 @@
+# dont use this  code - it is terrible :)
+
 import bpy
 import bgl
 import blf
